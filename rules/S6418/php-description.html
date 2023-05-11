@@ -1,0 +1,191 @@
+<div class="sect1">
+<h2 id="_description">Description</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Secrets should not be hard-coded in source code, instead be stored outside of the source code in a configuration file or a management service for secrets.</p>
+</div>
+<div class="paragraph">
+<p>There would be a risk, if any of the following apply to you:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The secret allows access to a sensitive component like a database, a file storage, an API, or a service.</p>
+</li>
+<li>
+<p>The secret is used in a production environment.</p>
+</li>
+<li>
+<p>Application re-distribution is required before updating the secret.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_why_is_this_an_issue">Why is this an issue?</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Because it is easy to extract strings from an application source code or binary, secrets should not be hard-coded. This is particularly true for applications that are distributed or that are open-source.</p>
+</div>
+<div class="paragraph">
+<p>In the past, it has led to the following vulnerabilities:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2022-25510">CVE-2022-25510</a></p>
+</li>
+<li>
+<p><a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-42635">CVE-2021-42635</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_how_to_fix_it">How to fix it</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Store the secret in a configuration file that is not pushed to the code repository.</p>
+</li>
+<li>
+<p>Use your cloud provider&#8217;s service for managing secrets.</p>
+</li>
+<li>
+<p>If a secret has been disclosed through the source code: revoke it and create a new one.</p>
+</li>
+</ul>
+</div>
+<div class="sect2">
+<h3 id="_code_examples">Code examples</h3>
+<div class="sect3">
+<h4 id="_noncompliant_code_example">Noncompliant code example</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-php" data-lang="php">$secret = '47828a8dd77ee1eb9dde2d5e93cb221ce8c32b37';
+MyClass-&gt;callMyService($secret);</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_compliant_solution">Compliant solution</h4>
+<div class="paragraph">
+<p>Using <a href="https://github.com/awsdocs/aws-doc-sdk-examples/tree/main/php/example_code/secretsmanager">AWS Secrets Manager</a>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-php" data-lang="php">use Aws\SecretsManager\SecretsManagerClient;
+use Aws\Exception\AwsException;
+
+$client = new SecretsManagerClient(...);
+$secretName = '&lt;&lt;{{MySecretName}}&gt;&gt;';
+doSomething($client, $secretName)
+
+function doSomething($client, $secretName) {
+    try {
+        $result = $client-&gt;getSecretValue([
+            'SecretId' =&gt; $secretName,
+        ]);
+
+    } catch (AwsException $e) {
+    ...
+    }
+
+    if (isset($result['SecretString'])) {
+        $secret = $result['SecretString'];
+    } else {
+        $secret = base64_decode($result['SecretBinary']);
+    }
+
+    // do something with the secret
+    MyClass-&gt;callMyService($secret);
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_how_does_this_work">How does this work?</h3>
+<div class="paragraph">
+<p>This rule detects variables/fields having a name matching a list of words (secret, token, credential, auth, api[_.-]?key) being assigned a pseudorandom hard-coded value.
+The pseudorandomness of the hard-coded value is based on its entropy and the probability to be human-readable. The randomness sensibility can be adjusted if needed. Lower values will detect less random values, raising potentially more false positives.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_resources">Resources</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_documentation">Documentation</h3>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://owasp.org/Top10/A07_2021-Identification_and_Authentication_Failures/">OWASP Top 10 2021 Category A7</a> - Identification and Authentication Failures</p>
+</li>
+<li>
+<p><a href="https://owasp.org/www-project-top-ten/2017/A2_2017-Broken_Authentication">OWASP Top 10 2017 Category A2</a> - Broken Authentication</p>
+</li>
+<li>
+<p><a href="https://cwe.mitre.org/data/definitions/798.html">MITRE, CWE-798</a> - Use of Hard-coded Credentials</p>
+</li>
+<li>
+<p><a href="https://wiki.sei.cmu.edu/confluence/x/OjdGBQ">CERT, MSC03-J.</a> - Never hard code sensitive information</p>
+</li>
+</ul>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_implementation_specification">Implementation Specification</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>(visible only on this page)</p>
+</div>
+<div class="sect2">
+<h3 id="_message">Message</h3>
+<div class="paragraph">
+<p>"xxxxx" detected here, make sure this is not a hard-coded secret.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_highlighting">Highlighting</h3>
+<div class="paragraph">
+<p>Highlight the detected hard-coded secret.
+=== Parameters</p>
+</div>
+<div class="sidebarblock">
+<div class="content">
+<div class="title">secretWords</div>
+<div class="listingblock">
+<div class="content">
+<pre>api[_.-]?key, auth, credential, secret, token</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Comma separated list of words identifying potential secret</p>
+</div>
+</div>
+</div>
+<div class="sidebarblock">
+<div class="content">
+<div class="title">randomnessSensibility</div>
+<div class="listingblock">
+<div class="content">
+<pre>7</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Allows to tune the Randomness Sensibility (from 0 to 10)</p>
+</div>
+</div>
+</div>
+<hr>
+</div>
+</div>
+</div>

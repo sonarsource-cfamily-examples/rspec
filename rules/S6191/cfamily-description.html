@@ -1,0 +1,65 @@
+<div class="sect1">
+<h2 id="_description">Description</h2>
+<div class="sectionbody">
+
+</div>
+</div>
+<div class="sect1">
+<h2 id="_why_is_this_an_issue">Why is this an issue?</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>When a variable appears in a compound expression (for instance <code>a&#43;&#43;</code> or <code>a+=2</code>), the variable is accessed twice. This detail only matters for <code>volatile</code> variables. And it may not be obvious to all developers that two accesses happen while the variable is only named once. The standard was not explicit on this topic up until C&#43;&#43;23.</p>
+</div>
+<div class="paragraph">
+<p>As a consequence, it is usually clearer to rewrite the code so that the variable appears twice, matching the accesses that will happen.</p>
+</div>
+<div class="paragraph">
+<p>In C++, it usually does not matter how many times you access a variable, as long as the variable value is the right one. This is not the case when the variable is in a memory region that is mapped to external hardware. In that case, for instance, several successive reads can yield different values (if the memory is updated by the hardware in-between) and several writes of the same value may be significant (some hardware trigger events each time a memory location is written to).</p>
+</div>
+<div class="paragraph">
+<p>To specify that every read and write has an impact outside of the abstract machine of the language, access to a variable may be qualified as <code>volatile</code>. In that case, the program must perform all reads and writes that are specified, without optimizing anything away.</p>
+</div>
+<div class="paragraph">
+<p>Note: In C&#43;&#43;20, compound expressions on volatile variables were deprecated. This deprecation was removed in C&#43;&#43;23, and the number of accesses was made explicit. The reason for removing the deprecation is that such operations are commonly used in embedded code, especially to access specific bits of a variable. However, using a function with a dedicated name instead of direct bit manipulation usually leads to code that is easier to read.</p>
+</div>
+<div class="sect2">
+<h3 id="_noncompliant_code_example">Noncompliant code example</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-cpp" data-lang="cpp">void f1(int volatile* p) {
+  ++(*p); // Noncompliant
+}
+
+void f2(volatile int&amp; in) {
+  in += 2; // Noncompliant
+}
+
+void f3(volatile int&amp; in) {
+  int i = in = 2; // Noncompliant
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_compliant_solution">Compliant solution</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-cpp" data-lang="cpp">void f1(int volatile* p) {
+  auto val = *p;  // One access to read the register
+  *p = val + 1; // One access to write to it (and potentially overwrite another change)
+}
+
+void f2(volatile int&amp; in) {
+  auto val = in;
+  in = val + 2;
+}
+
+void f3(volatile int&amp; in) {
+  in = 2;
+  int i = in;
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>

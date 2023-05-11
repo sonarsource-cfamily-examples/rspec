@@ -1,0 +1,58 @@
+<div class="sect1">
+<h2 id="_description">Description</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In JavaScript, we can use the <code>/</code> (backslash) character to escape special characters inside a string, a template literal, or a regular expression.</p>
+</div>
+<div class="paragraph">
+<p>It indicates that the next character should be treated as a literal character rather than as a special character or string delimiter.</p>
+</div>
+<div class="paragraph">
+<p>For instance, it is common to escape single quotes inside a string literal using the single quote delimiter like <code>'It\'s a beautiful day'</code>.</p>
+</div>
+<div class="paragraph">
+<p>Escaping is only meaningful for special characters.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_why_is_this_an_issue">Why is this an issue?</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Escaping non-special characters in strings, template literals, and regular expressions doesn&#8217;t affect their value. Therefore, useless escapes impact code readability and could even denote a bug in the code if the developer left it by mistake or intended to escape another special character instead.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_how_to_fix_it">How to fix it</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>We can safely remove a useless character escape without changing the original behaviour.</p>
+</div>
+<div class="sect2">
+<h3 id="_code_examples">Code examples</h3>
+<div class="sect3">
+<h4 id="_noncompliant_code_example">Noncompliant code example</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">const regex = /[\[]/;
+const octal = '\8';
+const hello = 'Hello, world\!';
+const path  = `\/${some}\/${dir}`;</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_compliant_solution">Compliant solution</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">const regex = /[[]/;
+const octal = '8';
+const hello = 'Hello, world!';
+const path  = `/${some}/${dir}`;</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>

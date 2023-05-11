@@ -1,0 +1,51 @@
+<div class="sect1">
+<h2 id="_description">Description</h2>
+<div class="sectionbody">
+
+</div>
+</div>
+<div class="sect1">
+<h2 id="_why_is_this_an_issue">Why is this an issue?</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Python 3.11 introduced <code>except*</code> and <code>ExceptionGroup</code>.
+While it&#8217;s possible to catch the ExceptionGroup and BaseExceptionGroup types with <code>except`</code>, a Runtime error will be raised when this is done with <code>except*</code>.
+See PEP 654 : <a href="https://peps.python.org/pep-0654/#forbidden-combinations">PEP-654</a></p>
+</div>
+<div class="sect2">
+<h3 id="_noncompliant_code_example">Noncompliant code example</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-python" data-lang="python">try:
+    ...
+except* ExceptionGroup:  # Noncompliant
+    pass
+
+try:
+    ...
+except* (TypeError, ExceptionGroup):  # Noncompliant
+    pass</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_compliant_solution">Compliant solution</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-python" data-lang="python">try:
+    ...
+except ExceptionGroup:
+    pass</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_resources">Resources</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><a href="https://peps.python.org/pep-0654/#forbidden-combinations">PEP-654</a></p>
+</div>
+</div>
+</div>

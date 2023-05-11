@@ -1,0 +1,58 @@
+<div class="sect1">
+<h2 id="_description">Description</h2>
+<div class="sectionbody">
+
+</div>
+</div>
+<div class="sect1">
+<h2 id="_why_is_this_an_issue">Why is this an issue?</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Providing values like an object to a React <code>Context</code> will provoke additional re-renders as
+React doesn&#8217;t know the object is the same.
+This can significantly impact performance since the whole component tree will be re-rendered each time.
+Wrapping the value in a <code>useMemo</code> hook will avoid additional render passes.</p>
+</div>
+<div class="sect2">
+<h3 id="_noncompliant_code_example">Noncompliant code example</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">function Component() {
+  return (
+    &lt;SomeContext.Provider value={{foo: 'bar'}}&gt; { /* value is an object expression */ }
+      &lt;SomeComponent /&gt;
+    &lt;/SomeContext.Provider&gt;
+  );
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_compliant_solution">Compliant solution</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">function Component() {
+  const foo = useMemo(() =&gt; ({foo: 'bar'}), []);
+  return (
+    &lt;SomeContext.Provider value={foo}&gt;
+      &lt;SomeComponent /&gt;
+    &lt;/SomeContext.Provider&gt;
+  );
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_resources">Resources</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://reactjs.org/docs/context.html#caveats">Context Caveats</a> - React documentation</p>
+</li>
+</ul>
+</div>
+</div>
+</div>

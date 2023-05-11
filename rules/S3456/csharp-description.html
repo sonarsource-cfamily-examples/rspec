@@ -1,0 +1,103 @@
+<div class="sect1">
+<h2 id="_description">Description</h2>
+<div class="sectionbody">
+
+</div>
+</div>
+<div class="sect1">
+<h2 id="_why_is_this_an_issue">Why is this an issue?</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><code>ToCharArray</code> can be omitted when the operation on the array could have been done directly on the string, such as when iterating over the characters in a string, and when accessing a character in a string via an array index. In those cases, explicit <code>ToCharArray</code> calls should be omitted.</p>
+</div>
+<div class="paragraph">
+<p>C#11 introduced support for UTF-8 string literals, which are stored as <code>ReadOnlySpan&lt;byte&gt;</code> objects.
+For that reason, the rule also raises on <code>ToArray</code> invocations of <code>ReadOnlySpan&lt;T&gt;</code>.</p>
+</div>
+<div class="sect2">
+<h3 id="_noncompliant_code_example">Noncompliant code example</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-csharp" data-lang="csharp">string str = "some string";
+foreach (var c in str.ToCharArray()) // Noncompliant
+{
+  // ...
+}
+
+ReadOnlySpan&lt;byte&gt; span = "some UTF-8 string literal"u8;
+foreach (var c in span.ToArray()) // Noncompliant
+{
+  // ...
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_compliant_solution">Compliant solution</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-csharp" data-lang="csharp">string str = "some string";
+foreach (var c in str)
+{
+  // ...
+}
+
+ReadOnlySpan&lt;byte&gt; span = "some UTF-8 string literal"u8;
+foreach (var b in span) // Compliant
+{
+  // ...
+}</code></pre>
+</div>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_implementation_specification">Implementation Specification</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>(visible only on this page)</p>
+</div>
+<div class="sect2">
+<h3 id="_message">Message</h3>
+<div class="paragraph">
+<p>Remove this redundant ["ToCharArray"|"ToArray"] call.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_highlighting">Highlighting</h3>
+<div class="ulist">
+<ul>
+<li>
+<p><code>ToCharArray()</code></p>
+</li>
+<li>
+<p><code>ToArray()</code></p>
+</li>
+</ul>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_comments_and_links">Comments And Links</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>(visible only on this page)</p>
+</div>
+<div class="sect2">
+<h3 id="_on_10_dec_2015_090547_tamas_vajk_wrote">on 10 Dec 2015, 09:05:47 Tamas Vajk wrote:</h3>
+<div class="paragraph">
+<p>\[~ann.campbell.2] Applied minor changes.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_on_10_dec_2015_144316_ann_campbell_wrote">on 10 Dec 2015, 14:43:16 Ann Campbell wrote:</h3>
+<div class="paragraph">
+<p>looks good [~tamas.vajk]</p>
+</div>
+</div>
+</div>
+</div>
